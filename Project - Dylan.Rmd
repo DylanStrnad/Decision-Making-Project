@@ -4,3 +4,27 @@ output: html_document
 date: "2025-04-25"
 ---
 
+# Data Introduction
+
+### Description of Data
+Data consists of the date, location, richter, and deaths associated with earthquakes.
+The population is the deaths associated with each earthquake.
+A total of 124 observations have been recorded.
+
+### Variables
+* Year (numerical)
+* Month (categorical - ordinal)
+* Day (numerical)
+* Richter (numerical)
+* Area (categorical)
+* Region (categorical)
+* Deaths (numerical)
+
+# Research Questions
+
+
+
+# Main Analyses
+
+
+# Conclusion
