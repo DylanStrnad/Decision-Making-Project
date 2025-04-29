@@ -21,8 +21,17 @@ A total of 124 observations have been recorded.
 * Deaths (numerical)
 
 # Research Questions
+### question of interest: Is there a significant relationship between earthquake richter scale and the number of deaths?
+* Null hypothesis: no relationship between richter and number of death
+* Alternative hypothesis: there is a relationship between earthquake richter and number of deaths
 
+* Type 1 error means that we reject the null hypothesis but it is actually true. In this case, we reject that there is no relationship between richter and number of deaths, even though null is true.
+* Type 2 error means null hypothesis is accepted, even though it is false. In this case, we accept that there is no relationship between richter and number of deaths, even though this is not true.
 
+* Type 2 error is worse, as people would be unaware that a high richter earthquake leads to more deaths. Where as with type 1, people would at least take precatioin for a high richter earthquake, even though it does not lead to more deaths.
+
+###supporting questions:
+* 
 
 # Main Analyses
 
