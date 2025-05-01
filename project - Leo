@@ -1,1 +1,100 @@
+---
+title: "Final project"
+author: "Leo"
+output: html_document
+---
 
+## Date introduction:
+Data consists of the date, location, richter, and deaths associated with earthquakes.
+The population is the deaths associated with each earthquake.
+A total of 123 observations have been recorded.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(openintro)
+openintro::earthquakes
+```
+
+## The variables(total 7):
+* Year (numerical)
+* Month (categorical - ordinal)
+* Day (numerical)
+* Richter (numerical)
+* Area (categorical)
+* Region (categorical)
+* Deaths (numerical)
+
+
+## Research questions:
+Our interest question: whether different regions have different average earthquake death tolls?
+
+* Null hypothesis: All regions have the same average number of deaths
+
+* Alternative hypothesis: At least one region has a different average number of deaths
+
+* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some regions have different death rates, and maybe governments overreact or misallocate disaster resources.
+
+* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some regions really are more dangerous, but no action is taken.
+
+* Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
+
+
+## Summarize Average Deaths by Region
+```{r}
+# Calculate average deaths per region
+region_summary <- earthquakes %>%
+  group_by(region) %>%
+  summarise(count = n(),
+            avg_deaths = mean(deaths),
+            .groups = "drop")
+
+# View the summary table
+region_summary
+```
+
+Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
+
+```{r}
+# Bar chart of average deaths
+ggplot(region_summary, aes(x = reorder(region, -avg_deaths), y = avg_deaths)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Average Earthquake Deaths by Region",
+       x = "Region", y = "Average Number of Deaths") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+After we check the graph, we need to analysis our variance
+```{r}
+# Fit the ANOVA model
+anova_model <- aov(deaths ~ region, data = earthquakes)
+```
+
+Now we need to get the Summary Table
+
+```{r}
+# Show the summary of the model
+summary(anova_model)
+```
+Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
+
+```{r}
+# Normal Q-Q plot
+qqnorm(resid(anova_model))
+qqline(resid(anova_model))
+
+```
+
+Residuals vs Fitted for Equal Variance
+
+```{r}
+# Check residual spread
+plot(anova_model$fitted.values, resid(anova_model),
+     main = "Residuals vs Fitted Values",
+     xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, col = "red")
+
+```
+
+## Conclusion:
+
+Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.049 < 0.05, so we reject the null hypothesis, which means: There is statistically significant evidence that the average number of earthquake deaths differs by region
