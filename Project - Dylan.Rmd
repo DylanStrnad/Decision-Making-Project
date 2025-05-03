@@ -1,39 +1,138 @@
 ---
-title: "Final Project"
+title: "Final project"
+author: "Leo"
 output: html_document
-date: "2025-04-25"
 ---
 
-# Data Introduction
-
-### Description of Data
+## Date introduction:
 Data consists of the date, location, richter, and deaths associated with earthquakes.
 The population is the deaths associated with each earthquake.
-A total of 124 observations have been recorded.
+A total of 123 observations have been recorded.
 
-### Variables
-* Year (numerical)
-* Month (categorical - ordinal)
-* Day (numerical)
-* Richter (numerical)
-* Area (categorical)
-* Region (categorical)
-* Deaths (numerical)
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(openintro)
+openintro::earthquakes
+```
 
-# Research Questions
-### question of interest: Is there a significant relationship between earthquake richter scale and the number of deaths?
-* Null hypothesis: no relationship between richter and number of death
-* Alternative hypothesis: there is a relationship between earthquake richter and number of deaths
-
-* Type 1 error means that we reject the null hypothesis but it is actually true. In this case, we reject that there is no relationship between richter and number of deaths, even though null is true.
-* Type 2 error means null hypothesis is accepted, even though it is false. In this case, we accept that there is no relationship between richter and number of deaths, even though this is not true.
-
-* Type 2 error is worse, as people would be unaware that a high richter earthquake leads to more deaths. Where as with type 1, people would at least take precatioin for a high richter earthquake, even though it does not lead to more deaths.
-
-###supporting questions:
-* 
-
-# Main Analyses
+## The variables(total 7):
+* Year (numerical) - year the earthquake took place
+* Month (categorical - ordinal) - month the earthquake took place
+* Day (numerical) - day the earthquake took place
+* Richter (numerical) - magnitude of earthquake using richter scale
+* Area (categorical) - City or geographic location of earthquake
+* Region (categorical) - country or countries if the earthquake occurred on border
+* Deaths (numerical) - approximate number of deaths caused buy earthquake
 
 
-# Conclusion
+## Research questions:
+Our interest question: whether different regions have different average earthquake death tolls?
+
+* Null hypothesis: All regions have the same average number of deaths
+
+* Alternative hypothesis: At least one region has a different average number of deaths
+
+* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some regions have different death rates, and maybe governments overreact or misallocate disaster resources.
+
+* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some regions really are more dangerous, but no action is taken.
+
+* Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
+
+* Expected Outcome: We expect the regions to have a different avergage number of deaths.
+
+
+## Summarize Average Deaths by Region
+```{r}
+
+unique(earthquakes$region)
+
+continent_data <- c(
+  "Guatemala" = "Americas",
+  "Russia" = "Asia",
+  "Turkey" = "Asia",
+  "India" = "Asia",
+  "Ecuador" = "Americas",
+  "Taiwan" = "Asia",
+  "United States" = "Americas",
+  "Chile" = "Americas",
+  "Asia" = "Asia", 
+  "Italy" = "Europe",
+  "Iran" = "Asia",
+  "China" = "Asia",
+  "Japan" = "Asia",
+  "Nicaragua" = "Americas",
+  "Armenia-Azerbaijan" = "Asia",
+  "India-Nepal" = "Asia",
+  "Pakistan" = "Asia",
+  "Romania" = "Europe",
+  "Argentina" = "Americas",
+  "Peru" = "Americas",
+  "Turkmenistan" = "Asia",
+  "Tajikistan" = "Asia",
+  "Algeria" = "Africa",
+  "Afghanistan" = "Asia",
+  "Morocco" = "Africa",
+  "Yugoslavia" = "Europe",
+  "Chine" = "Asia",
+  "New Guinea" = "Oceania",
+  "Philippines" = "Asia",
+  "Iran-Turkey" = "Asia",
+  "Mexico" = "Americas",
+  "El Salvador" = "Americas",
+  "Colombia-Ecuador" = "Americas",
+  "Armenia" = "Asia",
+  "Pakistan-Afghanistan" = "Asia",
+  "Indonesia" = "Asia",
+  "Colombia" = "Americas",
+  "Afghanistan-Tajikistan" = "Asia"
+)
+  
+(earthquakes <- earthquakes %>%
+  mutate(continent = continent_data[region]))
+
+region_summary <- earthquakes %>%
+  group_by(continent) %>%
+  summarise(count = n(),
+            avg_deaths = mean(deaths),
+            .groups = "drop")
+
+# View the summary table
+region_summary
+
+
+#(data_Peru <- earthquakes %>% filter(region == "Peru") %>% select(deaths))
+
+#(data_Turkmenistan <- earthquakes %>% filter(region == "Turkmenistan") %>% select(deaths))
+
+#t.test(data_Peru, data_Turkmenistan)
+```
+
+Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
+
+```{r}
+# Bar chart of average deaths
+ggplot(region_summary, aes(x = reorder(region, -avg_deaths), y = avg_deaths)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Average Earthquake Deaths by Region",
+       x = "Region", y = "Average Number of Deaths") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+After we check the graph, we need to analysis our variance
+```{r}
+# Fit the ANOVA model
+anova_model <- aov(deaths ~ region, data = earthquakes)
+```
+
+Now we need to get the Summary Table
+
+```{r}
+# Show the summary of the model
+summary(anova_model)
+```
+Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
+
+
+## Conclusion:
+
+Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.044 < 0.05, so we reject the null hypothesis, which means: There is statistically significant evidence that the average number of earthquake deaths differs by region
