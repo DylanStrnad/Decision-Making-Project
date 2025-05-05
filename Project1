@@ -1,0 +1,169 @@
+---
+title: "Final_Project"
+author: "Michael, Leo, and Dylan"
+date: "May 5th, 2025"
+output: word_document
+---
+
+## Date introduction:
+Data consists of the date, location, richter, and deaths associated with earthquakes.
+The population is the deaths associated with each earthquake.
+A total of 123 observations have been recorded.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(openintro)
+library(ggplot2)
+openintro::earthquakes
+```
+
+## The variables(total 7):
+* Year (numerical) - year the earthquake took place
+* Month (categorical - ordinal) - month the earthquake took place
+* Day (numerical) - day the earthquake took place
+* Richter (numerical) - magnitude of earthquake using richter scale
+* Area (categorical) - City or geographic location of earthquake
+* Region (categorical) - country or countries if the earthquake occurred on border
+* Deaths (numerical) - approximate number of deaths caused buy earthquake
+
+
+## Research questions:
+Our interest question: whether different continents have different average earthquake death tolls?
+
+* Null hypothesis: All continents have the same average number of deaths
+
+* Alternative hypothesis: At least one continent has a different average number of deaths
+
+* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
+
+* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some continents really are more dangerous, but no action is taken.
+
+* Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
+
+* Expected Outcome: We expect the continents to have a different avergage number of deaths.
+
+
+## Summarize Average Deaths by Region
+```{r}
+
+#divide data into continents
+continent_data <- c(
+  "Guatemala" = "Americas",
+  "Russia" = "Asia",
+  "Turkey" = "Asia",
+  "India" = "Asia",
+  "Ecuador" = "Americas",
+  "Taiwan" = "Asia",
+  "United States" = "Americas",
+  "Chile" = "Americas",
+  "Asia" = "Asia", 
+  "Italy" = "Europe",
+  "Iran" = "Asia",
+  "China" = "Asia",
+  "Japan" = "Asia",
+  "Nicaragua" = "Americas",
+  "Armenia-Azerbaijan" = "Asia",
+  "India-Nepal" = "Asia",
+  "Pakistan" = "Asia",
+  "Romania" = "Europe",
+  "Argentina" = "Americas",
+  "Peru" = "Americas",
+  "Turkmenistan" = "Asia",
+  "Tajikistan" = "Asia",
+  "Algeria" = "Africa",
+  "Afghanistan" = "Asia",
+  "Morocco" = "Africa",
+  "Yugoslavia" = "Europe",
+  "Chine" = "Asia",
+  "New Guinea" = "Oceania",
+  "Philippines" = "Asia",
+  "Iran-Turkey" = "Asia",
+  "Mexico" = "Americas",
+  "El Salvador" = "Americas",
+  "Colombia-Ecuador" = "Americas",
+  "Armenia" = "Asia",
+  "Pakistan-Afghanistan" = "Asia",
+  "Indonesia" = "Asia",
+  "Colombia" = "Americas",
+  "Afghanistan-Tajikistan" = "Asia"
+)
+
+
+(earthquakes <- earthquakes %>%
+  mutate(
+    # if table has NA value for deaths, make it 0
+    deaths = ifelse(is.na(deaths), 0, deaths),
+    
+    #make new column in table
+    continent = continent_data[region]
+    ))
+
+
+avg_deaths <- earthquakes %>%
+  group_by(continent) %>%
+  summarise(count = n(),
+            avg_deaths = mean(deaths),
+            .groups = "drop")
+
+# View the summary table
+avg_deaths
+
+```
+
+Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
+
+```{r}
+# Bar chart of average deaths
+ggplot(avg_deaths, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Average Deaths Per Earthquake by Continent",
+       x = "Region", y = "Average Number of Deaths") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+After we check the graph, we run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy, making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in avg death might just be random.
+```{r}
+# t.test
+(data_Americas <- earthquakes %>% filter(continent == "Americas") %>% select(deaths))
+(data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
+
+t.test(data_Americas$deaths, data_Asia$deaths)
+```
+
+
+
+The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots.
+```{r}
+# Create a combined data frame for plotting
+(plot_America <- data.frame(
+  deaths = c(data_Americas),
+  continent = c(rep("Americas", length(data_Americas)))
+))
+
+ggplot(plot_America, aes(x = deaths, y = continent)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.7, color = "steelblue") +
+  labs(title = "Dot Plot of Earthquake Deaths by Continent",
+       x = "Number of Deaths",
+       y = "Continent") +
+  theme_minimal()
+
+(plot_Asia <- data.frame(
+  deaths = c(data_Asia),
+  continent = c(rep("Asia", length(data_Asia)))
+))
+
+ggplot(plot_Asia, aes(x = deaths, y = continent)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.7, color = "steelblue") +
+  labs(title = "Dot Plot of Earthquake Deaths by Continent",
+       x = "Number of Deaths",
+       y = "Continent") +
+  theme_minimal()
+
+```
+
+Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
+
+
+## Conclusion:
+
+Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.5544 > 0.05, so we fail to reject the null hypothesis, which means: There is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
