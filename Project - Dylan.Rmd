@@ -108,8 +108,23 @@ avg_deaths <- earthquakes %>%
 avg_deaths
 
 ```
-
+# Main Analysis
 Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
+
+Based on the graph, we would assume that the death tolls greatly differ between continents. But does this data meet the necessary conditions?
+
+The data is independent, but after running Shapiro-Wilk test, we find that the data is not normal.
+
+
+```{r}
+shapiro.test(data_Americas$deaths)
+shapiro.test(data_Asia$deaths)
+```
+
+
+In the context of our research question, we will compare the average death tolls of the top 2 continents. In this case, Americas and Asia have the highest average death tolls.
+
+
 
 ```{r}
 # Bar chart of average deaths
@@ -120,14 +135,18 @@ ggplot(region_summary, aes(x = reorder(continent, -avg_deaths), y = avg_deaths))
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-After we check the graph, we run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy, making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in avg death might just be random.
+After we check the graph, we run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy and not normal, making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in averageg death might just be random.
 ```{r}
-# t.test
+
+
 (data_Americas <- earthquakes %>% filter(continent == "Americas") %>% select(deaths))
 (data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
 
+
 t.test(data_Americas$deaths, data_Asia$deaths)
+
 ```
+
 
 
 
@@ -160,7 +179,6 @@ ggplot(plot_Asia, aes(x = deaths, y = continent)) +
 
 ```
 
-Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
 
 
 ## Conclusion:
