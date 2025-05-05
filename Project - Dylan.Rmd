@@ -26,26 +26,25 @@ openintro::earthquakes
 
 
 ## Research questions:
-Our interest question: whether different regions have different average earthquake death tolls?
+Our interest question: whether different continents have different average earthquake death tolls?
 
-* Null hypothesis: All regions have the same average number of deaths
+* Null hypothesis: All continents have the same average number of deaths
 
-* Alternative hypothesis: At least one region has a different average number of deaths
+* Alternative hypothesis: At least one continent has a different average number of deaths
 
-* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some regions have different death rates, and maybe governments overreact or misallocate disaster resources.
+* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
 
-* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some regions really are more dangerous, but no action is taken.
+* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some continents really are more dangerous, but no action is taken.
 
 * Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
 
-* Expected Outcome: We expect the regions to have a different avergage number of deaths.
+* Expected Outcome: We expect the continents to have a different avergage number of deaths.
 
 
 ## Summarize Average Deaths by Region
 ```{r}
 
-unique(earthquakes$region)
-
+#divide data into continents
 continent_data <- c(
   "Guatemala" = "Americas",
   "Russia" = "Asia",
@@ -86,53 +85,52 @@ continent_data <- c(
   "Colombia" = "Americas",
   "Afghanistan-Tajikistan" = "Asia"
 )
-  
-(earthquakes <- earthquakes %>%
-  mutate(continent = continent_data[region]))
 
-region_summary <- earthquakes %>%
+
+(earthquakes <- earthquakes %>%
+  mutate(
+    # if table has NA value for deaths, make it 0
+    deaths = ifelse(is.na(deaths), 0, deaths),
+    
+    #make new column in table
+    continent = continent_data[region]
+    ))
+
+
+avg_deaths <- earthquakes %>%
   group_by(continent) %>%
   summarise(count = n(),
             avg_deaths = mean(deaths),
             .groups = "drop")
 
 # View the summary table
-region_summary
+avg_deaths
 
-
-#(data_Peru <- earthquakes %>% filter(region == "Peru") %>% select(deaths))
-
-#(data_Turkmenistan <- earthquakes %>% filter(region == "Turkmenistan") %>% select(deaths))
-
-#t.test(data_Peru, data_Turkmenistan)
 ```
 
 Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
 
 ```{r}
 # Bar chart of average deaths
-ggplot(region_summary, aes(x = reorder(region, -avg_deaths), y = avg_deaths)) +
+ggplot(region_summary, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
   geom_bar(stat = "identity", fill = "steelblue") +
-  labs(title = "Average Earthquake Deaths by Region",
+  labs(title = "Average Deaths Per Earthquake by Continent",
        x = "Region", y = "Average Number of Deaths") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-After we check the graph, we need to analysis our variance
+After we check the graph, we run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy, making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in avg death might just be random.
 ```{r}
-# Fit the ANOVA model
-anova_model <- aov(deaths ~ region, data = earthquakes)
+# t.test
+(data_Americas <- earthquakes %>% filter(continent == "Americas") %>% select(deaths))
+(data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
+
+t.test(data_Americas$deaths, data_Asia$deaths)
 ```
 
-Now we need to get the Summary Table
-
-```{r}
-# Show the summary of the model
-summary(anova_model)
-```
 Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
 
 
 ## Conclusion:
 
-Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.044 < 0.05, so we reject the null hypothesis, which means: There is statistically significant evidence that the average number of earthquake deaths differs by region
+Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.5544  0.05, so we fail to reject the null hypothesis, which means: There is statistically significant evidence that the average number of earthquake deaths does not differ by region
