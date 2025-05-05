@@ -12,6 +12,7 @@ A total of 123 observations have been recorded.
 ```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(openintro)
+library(ggplot2)
 openintro::earthquakes
 ```
 
@@ -126,6 +127,37 @@ After we check the graph, we run data through t.test. While the difference in me
 (data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
 
 t.test(data_Americas$deaths, data_Asia$deaths)
+```
+
+
+
+The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness.
+```{r}
+# Create a combined data frame for plotting
+(plot_America <- data.frame(
+  deaths = c(data_Americas),
+  continent = c(rep("Americas", length(data_Americas)))
+))
+
+ggplot(plot_America, aes(x = deaths, y = continent)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.7, color = "steelblue") +
+  labs(title = "Dot Plot of Earthquake Deaths by Continent",
+       x = "Number of Deaths",
+       y = "Continent") +
+  theme_minimal()
+
+(plot_Asia <- data.frame(
+  deaths = c(data_Asia),
+  continent = c(rep("Asia", length(data_Asia)))
+))
+
+ggplot(plot_Asia, aes(x = deaths, y = continent)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.7, color = "steelblue") +
+  labs(title = "Dot Plot of Earthquake Deaths by Continent",
+       x = "Number of Deaths",
+       y = "Continent") +
+  theme_minimal()
+
 ```
 
 Before we compare with our p-value, we want to check our assumptions to make sure our data is correct.
