@@ -182,5 +182,4 @@ ggplot(plot_Asia, aes(x = deaths, y = continent)) +
 
 
 ## Conclusion:
-
-Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.5544 > 0.05, so we fail to reject the null hypothesis, which means: There is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
+Since our p-value = 0.5544 > 0.05, so we fail to reject the null hypothesis, which means: There is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
