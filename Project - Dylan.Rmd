@@ -131,7 +131,7 @@ t.test(data_Americas$deaths, data_Asia$deaths)
 
 
 
-The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness.
+The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots.
 ```{r}
 # Create a combined data frame for plotting
 (plot_America <- data.frame(
@@ -165,4 +165,4 @@ Before we compare with our p-value, we want to check our assumptions to make sur
 
 ## Conclusion:
 
-Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.5544  0.05, so we fail to reject the null hypothesis, which means: There is statistically significant evidence that the average number of earthquake deaths does not differ by region
+Based on our assumptions we know that our p-value is correct to use. Since our p-value = 0.5544 > 0.05, so we fail to reject the null hypothesis, which means: There is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
