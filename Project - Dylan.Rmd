@@ -7,7 +7,9 @@ output: word_document
 
 ## Date introduction:
 Data consists of the date, location, richter, and deaths associated with earthquakes.
-The population is the deaths associated with each earthquake.
+
+The data set is derived from randomly selected samples of notable earthquakes between 1902 - 1999.
+
 A total of 123 observations have been recorded.
 
 ```{r, message = FALSE, warning = FALSE}
@@ -28,19 +30,19 @@ openintro::earthquakes
 
 
 ## Research questions:
-Our interest question: whether different continents have different average earthquake death tolls?
+Our primary question of interest: Do Americas and Asia have different average earthquake death tolls?
 
-* Null hypothesis: All continents have the same average number of deaths
+* Null hypothesis: There is no difference between the average death toll from earthquakes in the Americas vs. Asia.
 
-* Alternative hypothesis: At least one continent has a different average number of deaths
+* Alternative hypothesis: There is a difference between the average death toll from earthquakes in the Americas vs. Asia.
 
-* Type 1 error: We reject H₀ (say continents are different), but in reality, they are not. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
+* Type 1 error: We reject H₀ (say continents are different), but in reality H₀ is true. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
 
 * Type 2 error: We fail to reject H₀ (say all continents are similar), but in reality, some are different. We may miss a real difference — some continents really are more dangerous, but no action is taken.
 
-* Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
+* Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more unnecessary deaths.
 
-* Supporting questions:
+* Supporting questions: Is there another variable impacting the amount of deaths other than region? Can the richter have any reflection on the amount of deaths?
 
 * Expected Outcome: We expect the continents to have a different average number of deaths.
 
@@ -124,7 +126,7 @@ ggplot(avg_deaths, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
 ```
 
 
-The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots. We will create the plots for Americas first.
+The data is very right skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots. We will create the plots for Americas first.
 ```{r}
 (data_Americas <- earthquakes %>% filter(continent == "Americas") %>% select(deaths))
 
@@ -143,7 +145,7 @@ ggplot(plot_America, aes(x = deaths, y = continent)) +
 ```
 
 
-Then we wanna get the dot plot for Asia and see the difference between them
+This is the dot plot for Asia, which is also very right skewed.
 ```{r}
 (data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
 
@@ -161,7 +163,7 @@ ggplot(plot_Asia, aes(x = deaths, y = continent)) +
 ```
 
 
-After we check the dot plot, we notice high levels of variance, these data are independent, but we are not sure if data is normal. We test if data is normal below:
+After we check the dot plot, we notice high levels of variance. The data is independent, but we are not sure if data is normal. We test if data is normal below:
 
 To prove that the data is not normalized, we use the shapiro test. The p-values below are less than 0.05, which suggests both sets of data are not normal.
 ```{r}
