@@ -1,7 +1,8 @@
 ---
-title: "Final project"
-author: "Leo"
-output: html_document
+title: "Final_Project"
+author: "Michael, Leo, and Dylan"
+date: "May 5th, 2025"
+output: word_document
 ---
 
 ## Date introduction:
@@ -33,18 +34,19 @@ Our interest question: whether different continents have different average earth
 
 * Alternative hypothesis: At least one continent has a different average number of deaths
 
-* Type 1 error: We reject H₀ (say regions are different), but in reality, they are not. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
+* Type 1 error: We reject H₀ (say continents are different), but in reality, they are not. Which means we wrongly claim that some continents have different death rates, and maybe governments overreact or misallocate disaster resources.
 
-* Type 2 error: We fail to reject H₀ (say all regions are similar), but in reality, some are different. We may miss a real difference — some continents really are more dangerous, but no action is taken.
+* Type 2 error: We fail to reject H₀ (say all continents are similar), but in reality, some are different. We may miss a real difference — some continents really are more dangerous, but no action is taken.
 
 * Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more deaths in the future.
 
-* Expected Outcome: We expect the continents to have a different avergage number of deaths.
+* Supporting questions:
+
+* Expected Outcome: We expect the continents to have a different average number of deaths.
 
 
-## Summarize Average Deaths by Region
+## Summarize Average Deaths by Region and Main Analyses
 ```{r}
-
 #divide data into continents
 continent_data <- c(
   "Guatemala" = "Americas",
@@ -106,52 +108,26 @@ avg_deaths <- earthquakes %>%
 
 # View the summary table
 avg_deaths
-
-```
-# Main Analysis
-Based on our data and forms, we can try to create a bar chart. Bar Chart: Visualize Average Deaths
-
-Based on the graph, we would assume that the death tolls greatly differ between continents. But does this data meet the necessary conditions?
-
-The data is independent, but after running Shapiro-Wilk test, we find that the data is not normal.
-
-
-```{r}
-shapiro.test(data_Americas$deaths)
-shapiro.test(data_Asia$deaths)
 ```
 
 
-In the context of our research question, we will compare the average death tolls of the top 2 continents. In this case, Americas and Asia have the highest average death tolls.
+Based on our data and forms, we can try to create a bar chart. According to the bar chart, it will show a visual comparison of the average number of deaths per earthquake in each continent, can also show which continent seems more dangerous on average.
 
-
-
+Bar Chart: Visualize Average Deaths
 ```{r}
 # Bar chart of average deaths
-ggplot(region_summary, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
+ggplot(avg_deaths, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Average Deaths Per Earthquake by Continent",
        x = "Region", y = "Average Number of Deaths") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-After we check the graph, we run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy and not normal, making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in averageg death might just be random.
+
+The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots. We will create the plots for Americas first.
 ```{r}
-
-
 (data_Americas <- earthquakes %>% filter(continent == "Americas") %>% select(deaths))
-(data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
 
-
-t.test(data_Americas$deaths, data_Asia$deaths)
-
-```
-
-
-
-
-The data is very skewed. The dot plots below show the variance in the data. The number of deaths per earthquake has a high level of randomness, as shown in the plots.
-```{r}
 # Create a combined data frame for plotting
 (plot_America <- data.frame(
   deaths = c(data_Americas),
@@ -164,6 +140,12 @@ ggplot(plot_America, aes(x = deaths, y = continent)) +
        x = "Number of Deaths",
        y = "Continent") +
   theme_minimal()
+```
+
+
+Then we wanna get the dot plot for Asia and see the difference between them
+```{r}
+(data_Asia <- earthquakes %>% filter(continent == "Asia") %>% select(deaths))
 
 (plot_Asia <- data.frame(
   deaths = c(data_Asia),
@@ -176,10 +158,25 @@ ggplot(plot_Asia, aes(x = deaths, y = continent)) +
        x = "Number of Deaths",
        y = "Continent") +
   theme_minimal()
+```
 
+
+After we check the dot plot, we notice high levels of variance, these data are independent, but we are not sure if data is normal. We test if data is normal below:
+
+To prove that the data is not normalized, we use the shapiro test. The p-values below are less than 0.05, which suggests both sets of data are not normal.
+```{r}
+shapiro.test(data_Americas$deaths)
+shapiro.test(data_Asia$deaths)
+```
+
+We run data through t.test. While the difference in mean looks big enough to reject null hypothesis, the data is very noisy (not normalized), making it hard to prove anything. As seen below, the confidence intervals are extremely wide, and we cant prove anything statistically. The difference in average death might just be random.
+```{r}
+# t.test
+
+t.test(data_Americas$deaths, data_Asia$deaths)
 ```
 
 
 
 ## Conclusion:
-Since our p-value = 0.5544 > 0.05, so we fail to reject the null hypothesis, which means: There is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
+Based on the skewed data sets, we do not have enough info to reject the null hypothesis. The p-value generated by the t.test() is unreliable (since the data sets are not normalized), and should not be considered for our conclusion. Given this, there is not enough evidence to reject the null hypothesis, so average number of deaths per continent does not differ.
