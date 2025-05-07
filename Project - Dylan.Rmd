@@ -42,10 +42,14 @@ Our primary question of interest: Do Americas and Asia have different average ea
 
 * Type 2 error is worse, if we miss real differences, we might not prepare properly in high-risk areas — which could lead to more unnecessary deaths.
 
+* Expected Outcome: We expect the continents to have a different average number of deaths.
+
+##Supporting Questions
+
 * Supporting questions: Is there another variable impacting the amount of deaths other than region? Can the richter have any reflection on the amount of deaths?
 
 
-As shown in the graph below, richter does have an effect on the amount of deaths, with the most deaths hovering around mid to high 7 richter. From this data, it is safe to assume that richter plays a role in the average death tolls per continent.
+As shown in the graph below, richter does have an effect on the amount of deaths, with the most deaths hovering around mid to high 7 richter. From this data, it is safe to assume that richter plays a role in the average death tolls per continent, but it is not linear.
 ```{r}
 #
 deaths_per_richter <- earthquakes %>%
@@ -60,7 +64,7 @@ ggplot(deaths_per_richter, aes(x = factor(richter), y = total_deaths)) +
   theme(axis.text.x = element_text(angle = 25))
 ```
 
-* Expected Outcome: We expect the continents to have a different average number of deaths.
+
 
 
 ## Summarize Average Deaths by Region and Main Analyses
@@ -140,7 +144,8 @@ ggplot(avg_deaths, aes(x = reorder(continent, -avg_deaths), y = avg_deaths)) +
        x = "Region", y = "Average Number of Deaths") +
   theme(axis.text.x = element_text(angle = 25))
 ```
-The plot below illustrates the distribution of data contained in the Asian and American continents. The dot plots represent that there is a high level of variation in the data. Specifically, the deaths per earhtquake can greatly vary.
+
+The plot below illustrates the distribution of data contained in the Asian and American continents. The dot plots represent that there is a high level of variation in the data. Specifically, the deaths per earthquake can greatly vary.
 
 ```{r}
 #divide data into seperate data sets
